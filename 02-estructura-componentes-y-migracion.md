@@ -8,7 +8,7 @@ Este backoffice hoy está construido con Ant Design (antd). Quiero migrarlo de f
 
 No es un big-bang: la app tiene que seguir funcionando y desplegable después de cada etapa. Antd y los componentes nuevos van a convivir hasta migrar la última pantalla.
 
-Los nombres y rutas de ejemplo (`/facturas`, `InvoiceTable`) son de otro dominio: adaptalos a este.
+Los nombres y rutas de ejemplo (`/entries`, `EntryTable`) son genéricos: adaptalos al dominio de este proyecto. El código de referencia está en [`reference/`](reference/README.md).
 
 ## 0. Antes de escribir código: diagnóstico
 
@@ -103,7 +103,7 @@ Reglas:
 - Contenido: `SidebarToggle`, bloque `min-w-0` con el breadcrumb (arriba, texto chico y apagado), `<h1 className="truncate">` y subtítulo opcional, un `flex-1` y las `actions` a la derecha. El título se corta con "…" antes de empujar las acciones.
 - **El breadcrumb no es un componente genérico**: cada página de detalle o sub-pantalla pasa un fragmento con link a la pantalla padre y un separador:
   ```tsx
-  breadcrumb={<><TextLink href="/facturas" className="font-normal text-muted">Facturas</TextLink><span aria-hidden>/</span></>}
+  breadcrumb={<><TextLink href="/entries" className="font-normal text-muted">Registros</TextLink><span aria-hidden>/</span></>}
   ```
   Las pantallas raíz del menú no llevan breadcrumb.
 - Cada página arma `<> <PageHeader .../> <div className="mx-auto flex w-full max-w-content flex-1 flex-col gap-5 px-page py-page">…</div> </>`.
@@ -120,16 +120,16 @@ Reglas:
 
 **Estilos compartidos** en `shared/ui/table.ts`: exporta `tableHeadRow`, `tableBodyRow`, `tableRowHover` y `tableActionsColumn` (strings de clases). Convención: primera columna a la izquierda, el resto centradas, 16px contra los bordes, última columna de acciones alineada a la derecha. Las celdas con flex deben centrar ellas mismas (`justify-center`).
 
-**Cada tabla** (ej. `InvoiceTable`):
+**Cada tabla** (ej. `EntryTable`):
 - Contenedor `relative hidden overflow-x-auto rounded-lg border md:block` (el `relative` es obligatorio: sin él, los `sr-only` absolutos de los `<th>` ensanchan la página en mobile).
 - `<table className="w-full min-w-[Npx] table-fixed border-collapse">` con `<colgroup>` y un array `COLUMN_WIDTHS` cuya suma entre en el ancho de contenido para no generar scroll horizontal.
 - `thead` con fondo "sunken"; `<th>` de acciones con `<span className="sr-only">Acciones</span>`.
-- Montos, fechas, documentos y números de comprobante con helpers de `shared/lib/format.ts` y `font-mono tabular-nums`.
+- Montos, fechas, documentos y identificadores con helpers de `shared/lib/format.ts` y `font-mono tabular-nums`.
 - Links de "Ver detalle" con `prefetch={false}` y `aria-label` descriptivo.
 
 **Paginación** (`shared/ui/Pagination.tsx`, Client Component) + lógica pura en `shared/lib/pagination.ts` (sin `"use client"`, porque la usan servidor y cliente: importar constantes de un módulo `"use client"` desde el servidor llega como referencia de cliente):
 - `PAGE_SIZES = [10, 20, 50, 100]`, `DEFAULT_PAGE_SIZE = 10`, `parsePage`, `parsePageSize` (valida contra la lista) y `pageItems(page, count)` (≤7 páginas: todas; si no `1 2 3 4 5 … N` / `1 … N-4..N` / `1 … p-1 p p+1 … N`; la elipsis salta 5 páginas).
-- Props: `page`, `totalPages`, `total`, `pageSize`, `noun` (plural: "284 comprobantes"), `path`, `query` (resto de filtros sin `page`/`size`).
+- Props: `page`, `totalPages`, `total`, `pageSize`, `noun` (plural: "284 registros"), `path`, `query` (resto de filtros sin `page`/`size`).
 - Página y tamaño viajan **en la URL** (`page`, `size`); los links son `<Link>` armados con `URLSearchParams` (se omiten `page=1` y el `size` por defecto). Cambiar el tamaño vuelve a la página 1.
 - Desktop: `total noun ‹ 1 2 3 … N › [10 / página]` (selector con `SelectField`). Mobile: `‹ 3 / 29 ›`. Ambas versiones con clases `hidden md:flex` / `md:hidden`.
 - Flechas deshabilitadas como `<span aria-disabled>` con opacidad reducida.

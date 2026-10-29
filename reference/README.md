@@ -1,0 +1,59 @@
+# Código de referencia
+
+Componentes y estructura del patrón descrito en [`../02-estructura-componentes-y-migracion.md`](../02-estructura-componentes-y-migracion.md). Es código de lectura para adaptar (no un paquete instalable) y está pensado para **no depender del negocio ni de un design system concreto**.
+
+- **Stack**: Next.js App Router, React, TypeScript, Tailwind v4, `lucide-react`, `clsx` + `tailwind-merge`.
+- **Typecheck**: el código compila en modo `strict` con estas dependencias.
+
+## Cómo se desacopla del design system
+
+Los componentes no usan colores, radios ni sombras concretos: solo **tokens semánticos** (`bg-surface-card`, `text-fg-muted`, `border-line`, `bg-accent`, `bg-surface-nav`, `text-on-nav`…). [`tokens.css`](tokens.css) es el contrato: para usar otro design system, mapeá cada token a un valor del tuyo y no toques los componentes.
+
+| Grupo | Tokens |
+|---|---|
+| Superficies | `surface-app`, `surface-card`, `surface-sunken`, `surface-hover`, `surface-nav` |
+| Texto | `fg`, `fg-secondary`, `fg-muted`, `on-nav`, `on-accent` |
+| Acción y bordes | `accent`, `accent-hover`, `line`, `line-strong`, `overlay`, `danger` |
+| Forma | `radius-sm/md/lg`, `shadow-lg`, `shadow-focus`, `ease-standard` |
+| Layout | `sidebar`, `sidebar-collapsed`, `topbar`, `content` |
+
+Dos cosas más que el design system debe proveer: la variante `sidebar-collapsed:` y las utilidades de márgenes fluidos `px-page`, `py-page`, `px-header` y `p-card` (ya definidas en `tokens.css`).
+
+Lo que hoy es un control simple (inputs y `<select>` nativos del drawer de filtros, el selector de tamaño de página) está marcado en el código para reemplazarlo por el Select/DateField de tu sistema. El dominio ("entries") y los textos son de ejemplo; los textos fijos de los componentes se pueden sobrescribir con la prop `labels`.
+
+## Estructura
+
+```
+reference/
+  tokens.css                      # contrato de tokens + variante sidebar-collapsed + utilidades de márgenes
+  src/
+    app/
+      layout.tsx                  # <html> con el script que aplica data-sidebar antes de pintar
+      (protected)/
+        layout.tsx                # requireSession + NAV (una sola fuente) + AppShell
+        entries/page.tsx          # listado: filtros → fetch → tabla + lista mobile + paginación / vacíos
+        entries/[id]/page.tsx     # detalle con breadcrumb como slot del PageHeader
+    features/
+      auth/                       # logout (server action) y LogoutButton (sidebar / hoja "Más")
+      entries/                    # feature de referencia: api, types, lib/filters, components
+        lib/filters.ts            # filtros ⇄ URL: parse, href, activos, isFiltered (lógica pura)
+        components/               # EntryFilters, EntryTable, EntryMobileList
+    shared/
+      lib/                        # cn, format, pagination (lógica pura, sin "use client")
+      ui/
+        navigation/               # AppShell, Sidebar, SidebarToggle, BottomNav, sidebar-state
+        PageHeader, Drawer, Pagination, FilterBar, MobileList, table, EmptyState, Button, TextLink, icons
+```
+
+## Decisiones de UX que los componentes implementan
+
+- **Shell**: sidebar fijo de escritorio (ancho completo o solo íconos con tooltip) y, en mobile, `BottomNav` con 4 pantallas + "Más". Todo con CSS, sin detectar el ancho en JS.
+- **Sidebar retráctil sin parpadeo**: el estado vive en `localStorage` y se refleja como `<html data-sidebar="collapsed">`; un script inline en el `<head>` lo aplica antes de pintar.
+- **Topbar** (`PageHeader`): botón del sidebar, breadcrumb (slot), título que se corta con "…", acciones a la derecha.
+- **Estado en la URL**: filtros, página y tamaño viajan en la query con los nombres de la API; son compartibles y funcionan con "atrás". Cualquier cambio vuelve a la página 1.
+- **Filtros**: buscador + controles rápidos + botón "Filtros" con contador. El drawer edita un **borrador** que recién se aplica con "Aplicar"; los aplicados quedan como pills quitables, con "Limpiar todo".
+- **Tablas**: estilos compartidos (primera columna a la izquierda, resto centradas, acciones a la derecha), anchos fijos que no generan scroll horizontal, cifras en monoespaciado. El contenedor lleva `relative` para que los `sr-only` no ensanchen la página en mobile.
+- **Paginación**: números con elipsis en escritorio, `‹ 3 / 29 ›` en mobile, tamaño de página elegible.
+- **Mobile**: cada tabla tiene su lista de dos líneas (`MobileList`) y los Drawer/Dialog se vuelven hojas desde abajo.
+- **Estados vacíos distintos**: "sin resultados con estos filtros" (con "Limpiar filtros") frente a "todavía no hay datos" (con la acción principal).
+- **Cerrar sesión**: `<form>` con server action; en el sidebar contraído queda solo el ícono, y en mobile es un botón de ancho completo en "Más".

@@ -8,3 +8,5 @@ Flujo de trabajo:
 2. **[02-estructura-componentes-y-migracion.md](02-estructura-componentes-y-migracion.md)**: patrón de referencia (layout, sidebar, breadcrumbs, logout, tablas con paginado en la URL, filtros en drawer, mobile) y estrategia de migración incremental.
 3. Se combinan ambos en la herramienta de diseño para obtener el diseño nuevo de la pantalla (el inventario manda en datos, contrato, validaciones y formatos; el patrón manda en estructura, layout y UX).
 4. Con ese diseño como fuente de verdad se hace el refactor de la pantalla.
+
+El código de los componentes, abstracto y sin dependencia de un design system concreto, está en [`reference/`](reference/README.md).
