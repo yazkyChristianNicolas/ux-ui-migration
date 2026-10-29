@@ -1,6 +1,6 @@
 # Código de referencia
 
-Componentes y estructura del patrón descrito en [`../02-estructura-componentes-y-migracion.md`](../02-estructura-componentes-y-migracion.md). Es código de lectura para adaptar (no un paquete instalable) y está pensado para **no depender del negocio ni de un design system concreto**.
+Componentes y estructura del patrón descrito en [`../03-estructura-componentes-y-migracion.md`](../03-estructura-componentes-y-migracion.md). Es código de lectura para adaptar (no un paquete instalable) y está pensado para **no depender del negocio ni de un design system concreto**.
 
 - **Stack**: Next.js App Router, React, TypeScript, Tailwind v4, `lucide-react`, `clsx` + `tailwind-merge`.
 - **Typecheck**: el código compila en modo `strict` con estas dependencias.
