@@ -13,7 +13,8 @@ Los componentes no usan colores, radios ni sombras concretos: solo **tokens sem�
 |---|---|
 | Superficies | `surface-app`, `surface-card`, `surface-sunken`, `surface-hover`, `surface-nav` |
 | Texto | `fg`, `fg-secondary`, `fg-muted`, `on-nav`, `on-accent` |
-| Acción y bordes | `accent`, `accent-hover`, `line`, `line-strong`, `overlay`, `danger` |
+| Acción y bordes | `accent`, `accent-hover`, `line`, `line-strong`, `overlay` |
+| Estados (texto + fondo suave) | `danger`, `success`, `warning`, `info` (+ `-bg` de cada uno) y `neutral-bg` |
 | Forma | `radius-sm/md/lg`, `shadow-lg`, `shadow-focus`, `ease-standard` |
 | Layout | `sidebar`, `sidebar-collapsed`, `topbar`, `content` |
 
@@ -37,12 +38,14 @@ reference/
       auth/                       # logout (server action) y LogoutButton (sidebar / hoja "Más")
       entries/                    # feature de referencia: api, types, lib/filters, components
         lib/filters.ts            # filtros ⇄ URL: parse, href, activos, isFiltered (lógica pura)
-        components/               # EntryFilters, EntryTable, EntryMobileList
+        lib/status.ts             # diccionario valor de la API → texto + tono
+        components/               # EntryFilters, EntryTable, EntryMobileList, EntryStatusBadge, CloseEntryDialog
     shared/
       lib/                        # cn, format, pagination (lógica pura, sin "use client")
       ui/
         navigation/               # AppShell, Sidebar, SidebarToggle, BottomNav, sidebar-state
-        PageHeader, Drawer, Pagination, FilterBar, MobileList, table, EmptyState, Button, TextLink, icons
+        PageHeader, Drawer, Dialog, Pagination, FilterBar, MobileList, table, EmptyState,
+        Button (con loading), Alert, StatusBadge, TextLink, icons
 ```
 
 ## Decisiones de UX que los componentes implementan
@@ -57,3 +60,6 @@ reference/
 - **Mobile**: cada tabla tiene su lista de dos líneas (`MobileList`) y los Drawer/Dialog se vuelven hojas desde abajo.
 - **Estados vacíos distintos**: "sin resultados con estos filtros" (con "Limpiar filtros") frente a "todavía no hay datos" (con la acción principal).
 - **Cerrar sesión**: `<form>` con server action; en el sidebar contraído queda solo el ícono, y en mobile es un botón de ancho completo en "Más".
+- **Feedback sin toasts**: los mensajes van en línea, pegados a la acción que los causó, con `Alert` (error y warning = `role="alert"`; success e info = `role="status"`). No desaparecen solos y se leen donde el usuario estaba mirando. Las acciones puntuales se confirman en el propio control (el botón "Copiar" pasa a un check por un instante) y los botones muestran `loading` (spinner + `aria-busy` + deshabilitado, sin cambiar el texto para que el ancho no salte).
+- **Estados**: `StatusBadge` combina tono, texto e ícono opcional (el color nunca es lo único que distingue); el valor de la API se traduce siempre con un diccionario, nunca se muestra crudo.
+- **Diálogos**: `Dialog` para una decisión o un formulario corto; los errores del envío vuelven adentro con `Alert` y la acción destructiva usa `Button variant="danger"` a la derecha del footer (ver `CloseEntryDialog`). En mobile se vuelve una hoja inferior. Cada Drawer/Dialog usa un `id` propio (`useId`) para poder convivir varios en la misma pantalla.

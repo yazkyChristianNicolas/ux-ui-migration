@@ -4,6 +4,7 @@ import { tableActionsColumn, tableBodyRow, tableContainer, tableHeadRow } from "
 import { TextLink } from "@/shared/ui/TextLink";
 
 import type { Entry } from "../types";
+import { EntryStatusBadge } from "./EntryStatusBadge";
 
 /** Anchos de columna: la suma tiene que entrar en el ancho de contenido para no generar scroll horizontal. */
 const COLUMN_WIDTHS = [180, 120, 140, 160, 120];
@@ -36,7 +37,9 @@ export function EntryTable({ entries }: { entries: Entry[] }) {
               <td className="font-mono text-[13px] font-medium tabular-nums">{entry.reference}</td>
               <td className="font-mono text-xs text-fg-muted">{formatDate(entry.date)}</td>
               <td className="font-mono text-sm font-medium tabular-nums">{formatMoney(entry.amount)}</td>
-              <td className="text-[13px]">{entry.status}</td>
+              <td>
+                <EntryStatusBadge status={entry.status} size="sm" />
+              </td>
               <td className="text-[13px]">
                 {/* Sin prefetch: serían N consultas del detalle por cada página del listado. */}
                 <TextLink href={`/entries/${entry.id}`} prefetch={false} aria-label={`Ver detalle de ${entry.reference}`}>

@@ -2,6 +2,7 @@ import { formatDate, formatMoney } from "@/shared/lib/format";
 import { MobileList, MobileListRow } from "@/shared/ui/MobileList";
 
 import type { Entry } from "../types";
+import { EntryStatusBadge } from "./EntryStatusBadge";
 
 /** Lista de mobile: referencia y monto arriba; fecha y estado abajo. Tocar una fila abre su detalle. */
 export function EntryMobileList({ entries }: { entries: Entry[] }) {
@@ -20,7 +21,7 @@ export function EntryMobileList({ entries }: { entries: Entry[] }) {
               {formatMoney(entry.amount)}
             </span>,
           ]}
-          bottom={[formatDate(entry.date), entry.status]}
+          bottom={[formatDate(entry.date), <EntryStatusBadge key="s" status={entry.status} size="sm" />]}
         />
       ))}
     </MobileList>

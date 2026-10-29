@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 import { cn } from "@/shared/lib/cn";
 
@@ -23,6 +23,8 @@ type DrawerProps = {
  */
 export function Drawer({ open, title, subtitle, size = "md", closeLabel = "Cerrar", onClose, children }: DrawerProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  // Id único: puede haber más de un Drawer en la misma pantalla (filtros + "Más" de mobile).
+  const titleId = useId();
 
   useEffect(() => {
     const dialog = ref.current;
@@ -34,7 +36,7 @@ export function Drawer({ open, title, subtitle, size = "md", closeLabel = "Cerra
   return (
     <dialog
       ref={ref}
-      aria-labelledby="drawer-title"
+      aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault();
         onClose();
@@ -53,7 +55,7 @@ export function Drawer({ open, title, subtitle, size = "md", closeLabel = "Cerra
       <div className="flex h-full flex-col max-md:max-h-[92vh]">
         <div className="flex items-start gap-3 border-b border-line bg-surface-card px-5 py-4">
           <div className="flex-1">
-            <h2 id="drawer-title" className="text-base font-semibold">
+            <h2 id={titleId} className="text-base font-semibold">
               {title}
             </h2>
             {subtitle && <p className="text-xs text-fg-muted">{subtitle}</p>}

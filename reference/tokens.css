@@ -26,8 +26,17 @@
   --color-line: #e4e4e9;             /* borde sutil */
   --color-line-strong: #cfcfd8;
   --color-overlay: rgb(20 22 31 / 0.4);
+
+  /* Estados (texto + fondo suave): Alert y StatusBadge */
   --color-danger: #b91c1c;
   --color-danger-bg: #fee2e2;
+  --color-success: #2f6b4f;
+  --color-success-bg: #e6f1eb;
+  --color-warning: #b45309;
+  --color-warning-bg: #fef3c7;
+  --color-info: #3b5bdb;
+  --color-info-bg: #e7ecfc;
+  --color-neutral-bg: #eeeef1;       /* texto: fg-muted */
 
   --radius-sm: 6px;
   --radius-md: 10px;
