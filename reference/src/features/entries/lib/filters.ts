@@ -12,6 +12,7 @@ export type EntryFilters = {
   date_from?: string;
   date_to?: string;
   category?: string;
+  owner?: string;
 };
 
 const STATUSES = ["ACTIVE", "PENDING", "CLOSED"] as const;
@@ -44,6 +45,7 @@ export function parseEntryFilters(params: RawSearchParams): EntryFilters {
     date_from: isoDate(first(params.date_from)),
     date_to: isoDate(first(params.date_to)),
     category: first(params.category),
+    owner: first(params.owner),
   };
 }
 
@@ -65,7 +67,7 @@ export function entriesHref(filters: Partial<EntryFilters>): string {
 }
 
 /** Filtros del drawer (el estado y el buscador van en la barra). */
-export const DRAWER_FILTERS = ["date_from", "date_to", "category"] as const;
+export const DRAWER_FILTERS = ["date_from", "date_to", "category", "owner"] as const;
 export type DrawerFilter = (typeof DRAWER_FILTERS)[number];
 
 export function activeDrawerFilters(filters: EntryFilters): DrawerFilter[] {

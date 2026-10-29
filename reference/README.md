@@ -20,7 +20,7 @@ Los componentes no usan colores, radios ni sombras concretos: solo **tokens sem�
 
 Dos cosas más que el design system debe proveer: la variante `sidebar-collapsed:` y las utilidades de márgenes fluidos `px-page`, `py-page`, `px-header` y `p-card` (ya definidas en `tokens.css`).
 
-Lo que hoy es un control simple (inputs y `<select>` nativos del drawer de filtros, el selector de tamaño de página) está marcado en el código para reemplazarlo por el Select/DateField de tu sistema. El dominio ("entries") y los textos son de ejemplo; los textos fijos de los componentes se pueden sobrescribir con la prop `labels`.
+El dominio ("entries") y los textos son de ejemplo; los textos fijos de los componentes se pueden sobrescribir con la prop `labels`.
 
 ## Estructura
 
@@ -45,6 +45,7 @@ reference/
       ui/
         navigation/               # AppShell, Sidebar, SidebarToggle, BottomNav, sidebar-state
         PageHeader, Drawer, Dialog, Pagination, FilterBar, MobileList, table, EmptyState,
+        Field (TextField, DateField, MoneyField, TextArea, FileDrop), Select, Combobox, Listbox,
         Button (con loading), Alert, StatusBadge, TextLink, icons
 ```
 
@@ -63,3 +64,5 @@ reference/
 - **Feedback sin toasts**: los mensajes van en línea, pegados a la acción que los causó, con `Alert` (error y warning = `role="alert"`; success e info = `role="status"`). No desaparecen solos y se leen donde el usuario estaba mirando. Las acciones puntuales se confirman en el propio control (el botón "Copiar" pasa a un check por un instante) y los botones muestran `loading` (spinner + `aria-busy` + deshabilitado, sin cambiar el texto para que el ancho no salte).
 - **Estados**: `StatusBadge` combina tono, texto e ícono opcional (el color nunca es lo único que distingue); el valor de la API se traduce siempre con un diccionario, nunca se muestra crudo.
 - **Diálogos**: `Dialog` para una decisión o un formulario corto; los errores del envío vuelven adentro con `Alert` y la acción destructiva usa `Button variant="danger"` a la derecha del footer (ver `CloseEntryDialog`). En mobile se vuelve una hoja inferior. Cada Drawer/Dialog usa un `id` propio (`useId`) para poder convivir varios en la misma pantalla.
+- **Formularios**: `Field` envuelve todo control con el label siempre visible arriba (nunca el placeholder como label) y, abajo, el error (con ícono, reemplaza a la ayuda) o la ayuda, enlazados por `aria-describedby`. `TextField` admite ícono, prefijo y sufijo; los importes y fechas van en monoespaciado.
+- **Selects propios, nunca el nativo**: `SelectField` (lista corta) y `Combobox` (lista larga, con buscador) comparten `Listbox`, así que se ven y se comportan igual. Ambos siguen los patrones ARIA de combobox: flechas, Home/End, Enter/Espacio, Esc y, en el Select, escribir salta a la opción. La lista se abre hacia arriba si no entra abajo. `onChange` recibe el valor, no el evento, y con `name` el valor viaja en un input oculto, así que sirven en formularios no controlados. El Combobox filtra sin distinguir mayúsculas ni acentos, y también por dígitos (útil para identificadores con guiones).

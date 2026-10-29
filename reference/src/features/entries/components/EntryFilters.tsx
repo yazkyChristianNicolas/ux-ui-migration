@@ -3,24 +3,39 @@
 import { useRouter } from "next/navigation";
 
 import { formatDate } from "@/shared/lib/format";
+import { Combobox } from "@/shared/ui/Combobox";
+import { DateField, SelectField } from "@/shared/ui/Field";
 import { FilterBar } from "@/shared/ui/FilterBar";
 
 import { activeDrawerFilters, DRAWER_FILTERS, entriesHref, type DrawerFilter, type EntryFilters as Filters } from "../lib/filters";
 
 type Draft = Partial<Pick<Filters, DrawerFilter>>;
 
-const LABELS: Record<DrawerFilter, string> = { date_from: "Desde", date_to: "Hasta", category: "Categoría" };
+const LABELS: Record<DrawerFilter, string> = { date_from: "Desde", date_to: "Hasta", category: "Categoría", owner: "Responsable" };
+
+// En la app real estas opciones llegan de la API (catálogos), ya traducidas.
+const CATEGORIES = [
+  { value: "A", label: "Categoría A" },
+  { value: "B", label: "Categoría B" },
+  { value: "C", label: "Categoría C" },
+];
+const OWNERS = [
+  { value: "u1", label: "Ana Pérez" },
+  { value: "u2", label: "Bruno Díaz" },
+  { value: "u3", label: "Carla Gómez" },
+];
 
 function display(key: DrawerFilter, filters: Filters): string {
   const value = filters[key];
   // Siempre el texto del usuario, nunca el valor crudo de la API.
-  return key === "category" ? `Categoría ${value}` : formatDate(String(value));
+  if (key === "category") return CATEGORIES.find((option) => option.value === value)?.label ?? String(value);
+  if (key === "owner") return OWNERS.find((option) => option.value === value)?.label ?? String(value);
+  return formatDate(String(value));
 }
 
 /**
  * Filtros del listado: la URL es la fuente de verdad. Cualquier cambio navega y
- * vuelve a la página 1. En el drawer, usá los campos de tu design system; acá van
- * inputs simples para mostrar el patrón (un <select> nativo se reemplaza por tu Select).
+ * vuelve a la página 1.
  */
 export function EntryFilters({ filters }: { filters: Filters }) {
   const router = useRouter();
@@ -47,36 +62,41 @@ export function EntryFilters({ filters }: { filters: Filters }) {
     >
       {(draft, patch) => (
         <>
-          <fieldset className="grid grid-cols-2 gap-3">
+          <fieldset className="flex flex-col gap-2">
             <legend className="mb-2 text-[13px] font-medium">Fecha</legend>
-            <input
-              type="date"
-              aria-label="Desde"
-              value={draft.date_from ?? ""}
-              onChange={(e) => patch({ date_from: e.target.value || undefined })}
-              className="h-10 rounded-md border border-line-strong bg-surface-card px-3 text-sm"
-            />
-            <input
-              type="date"
-              aria-label="Hasta"
-              value={draft.date_to ?? ""}
-              onChange={(e) => patch({ date_to: e.target.value || undefined })}
-              className="h-10 rounded-md border border-line-strong bg-surface-card px-3 text-sm"
-            />
+            <div className="grid grid-cols-2 gap-3">
+              <DateField
+                id="filter-date-from"
+                label="Desde"
+                value={draft.date_from ?? ""}
+                onChange={(event) => patch({ date_from: event.target.value || undefined })}
+              />
+              <DateField
+                id="filter-date-to"
+                label="Hasta"
+                value={draft.date_to ?? ""}
+                onChange={(event) => patch({ date_to: event.target.value || undefined })}
+              />
+            </div>
           </fieldset>
-          <label className="flex flex-col gap-1.5 text-[13px] font-medium">
-            Categoría
-            <select
-              value={draft.category ?? ""}
-              onChange={(e) => patch({ category: e.target.value || undefined })}
-              className="h-10 rounded-md border border-line-strong bg-surface-card px-3 text-sm font-normal"
-            >
-              <option value="">Todas</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-            </select>
-          </label>
+          {/* Lista corta: Select. */}
+          <SelectField
+            id="filter-category"
+            label="Categoría"
+            options={[{ value: "", label: "Todas" }, ...CATEGORIES]}
+            value={draft.category ?? ""}
+            onChange={(value) => patch({ category: value || undefined })}
+          />
+          {/* Lista larga (clientes, productos…): Combobox con buscador. */}
+          <Combobox
+            id="filter-owner"
+            label="Responsable"
+            placeholder="Todos"
+            emptyMessage="Ningún responsable coincide."
+            options={[{ value: "", label: "Todos" }, ...OWNERS]}
+            value={draft.owner ?? ""}
+            onChange={(value) => patch({ owner: value || undefined })}
+          />
         </>
       )}
     </FilterBar>

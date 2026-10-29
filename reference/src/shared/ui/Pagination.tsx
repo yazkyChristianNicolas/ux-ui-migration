@@ -7,6 +7,7 @@ import { cn } from "@/shared/lib/cn";
 import { DEFAULT_PAGE_SIZE, pageItems, PAGE_SIZES } from "@/shared/lib/pagination";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
+import { SelectField } from "./Select";
 
 type PaginationProps = {
   page: number;
@@ -18,11 +19,6 @@ type PaginationProps = {
   /** Pantalla y resto de su query (filtros), sin `page` ni `size`. */
   path: string;
   query?: string;
-  /**
-   * Control del tamaño de página. Por defecto un <select> nativo; pasá el Select
-   * de tu design system (recibe el valor actual y `onChange(valor)`).
-   */
-  renderPageSize?: (args: { value: number; options: number[]; onChange: (value: number) => void }) => React.ReactNode;
   labels?: { previous: string; next: string; pageSize: string; perPage: (size: number) => string };
 };
 
@@ -37,7 +33,7 @@ const DEFAULT_LABELS = {
  * Paginación alineada a la derecha: `284 registros  ‹ 1 2 3 4 5 … 29 ›  [10 / página]`.
  * En mobile: `‹ 3 / 29 ›`. Página y tamaño viajan en la URL (`page`, `size`), como los filtros.
  */
-export function Pagination({ page, totalPages, total, pageSize, noun, path, query = "", renderPageSize, labels }: PaginationProps) {
+export function Pagination({ page, totalPages, total, pageSize, noun, path, query = "", labels }: PaginationProps) {
   const router = useRouter();
   const text = { ...DEFAULT_LABELS, ...labels };
   const count = Math.max(totalPages, 1);
@@ -99,24 +95,15 @@ export function Pagination({ page, totalPages, total, pageSize, noun, path, quer
           <ChevronRightIcon />
         </Arrow>
       </span>
-      <span className="ml-2">
-        {renderPageSize ? (
-          renderPageSize({ value: pageSize, options: PAGE_SIZES, onChange: changeSize })
-        ) : (
-          <select
-            aria-label={text.pageSize}
-            value={pageSize}
-            onChange={(event) => changeSize(Number(event.target.value))}
-            className="h-8 rounded-md border border-line-strong bg-surface-card px-2 text-[13px]"
-          >
-            {PAGE_SIZES.map((size) => (
-              <option key={size} value={size}>
-                {text.perPage(size)}
-              </option>
-            ))}
-          </select>
-        )}
-      </span>
+      <SelectField
+        id="page-size"
+        aria-label={text.pageSize}
+        compact
+        className="ml-2 w-[124px]"
+        options={PAGE_SIZES.map((size) => ({ value: size, label: text.perPage(size) }))}
+        value={pageSize}
+        onChange={(value) => changeSize(Number(value))}
+      />
     </nav>
   );
 }

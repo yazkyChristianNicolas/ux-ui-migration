@@ -2,10 +2,13 @@
 // Nunca pasar un componente de ícono de un Server a un Client Component: pasarlo ya renderizado (`<HomeIcon />`).
 import {
   AlertCircle,
+  Calendar,
   Check,
   CheckCircle2,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  FileCheck,
   Home,
   Info,
   ListFilter,
@@ -14,6 +17,7 @@ import {
   PanelLeft,
   Search,
   SearchX,
+  Upload,
   Settings,
   X,
   type LucideProps,
@@ -27,10 +31,13 @@ const withStroke = (Icon: React.ComponentType<LucideProps>) =>
   };
 
 export const AlertCircleIcon = withStroke(AlertCircle);
+export const CalendarIcon = withStroke(Calendar);
 export const CheckIcon = withStroke(Check);
 export const CheckCircleIcon = withStroke(CheckCircle2);
+export const ChevronDownIcon = withStroke(ChevronDown);
 export const ChevronLeftIcon = withStroke(ChevronLeft);
 export const ChevronRightIcon = withStroke(ChevronRight);
+export const FileCheckIcon = withStroke(FileCheck);
 export const HomeIcon = withStroke(Home);
 export const InfoIcon = withStroke(Info);
 export const ListFilterIcon = withStroke(ListFilter);
@@ -40,4 +47,5 @@ export const PanelLeftIcon = withStroke(PanelLeft);
 export const SearchIcon = withStroke(Search);
 export const SearchXIcon = withStroke(SearchX);
 export const SettingsIcon = withStroke(Settings);
+export const UploadIcon = withStroke(Upload);
 export const XIcon = withStroke(X);

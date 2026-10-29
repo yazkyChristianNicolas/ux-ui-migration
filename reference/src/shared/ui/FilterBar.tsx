@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { Button } from "./Button";
 import { Drawer } from "./Drawer";
+import { TextField } from "./Field";
 import { ListFilterIcon, SearchIcon, XIcon } from "./icons";
 
 export type AppliedFilter = {
@@ -67,6 +68,7 @@ export function FilterBar<TDraft extends object>({
   labels,
 }: FilterBarProps<TDraft>) {
   const text = { ...DEFAULT_LABELS, ...labels };
+  const searchId = useId();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<TDraft>(committed);
 
@@ -86,17 +88,16 @@ export function FilterBar<TDraft extends object>({
           search.onSubmit(String(new FormData(event.currentTarget).get("search") ?? ""));
         }}
       >
-        <label className="flex h-10 min-w-0 flex-[1_1_280px] items-center gap-2 rounded-md border border-line-strong bg-surface-card px-3 focus-within:shadow-focus">
-          <SearchIcon className="size-4 shrink-0 text-fg-muted" />
-          <input
-            name="search"
-            type="search"
-            aria-label={search.label}
-            placeholder={search.placeholder}
-            defaultValue={search.defaultValue}
-            className="min-w-0 flex-1 bg-transparent text-sm outline-none focus-visible:shadow-none"
-          />
-        </label>
+        <TextField
+          id={searchId}
+          name="search"
+          type="search"
+          aria-label={search.label}
+          icon={SearchIcon}
+          placeholder={search.placeholder}
+          defaultValue={search.defaultValue}
+          className="min-w-0 flex-[1_1_280px]"
+        />
         {toolbar}
         <Button variant="secondary" aria-haspopup="dialog" onClick={openDrawer} className="shrink-0">
           <ListFilterIcon className="size-4" />
