@@ -46,6 +46,7 @@ reference/
         navigation/               # AppShell, Sidebar, SidebarToggle, BottomNav, sidebar-state
         PageHeader, Drawer, Dialog, Pagination, FilterBar, MobileList, table, EmptyState,
         Field (TextField, DateField, MoneyField, TextArea, FileDrop), Select, Combobox, Listbox,
+        Choice (Checkbox, RadioGroup, Switch),
         Button (con loading), Alert, StatusBadge, TextLink, icons
 ```
 
@@ -66,3 +67,4 @@ reference/
 - **Diálogos**: `Dialog` para una decisión o un formulario corto; los errores del envío vuelven adentro con `Alert` y la acción destructiva usa `Button variant="danger"` a la derecha del footer (ver `CloseEntryDialog`). En mobile se vuelve una hoja inferior. Cada Drawer/Dialog usa un `id` propio (`useId`) para poder convivir varios en la misma pantalla.
 - **Formularios**: `Field` envuelve todo control con el label siempre visible arriba (nunca el placeholder como label) y, abajo, el error (con ícono, reemplaza a la ayuda) o la ayuda, enlazados por `aria-describedby`. `TextField` admite ícono, prefijo y sufijo; los importes y fechas van en monoespaciado.
 - **Selects propios, nunca el nativo**: `SelectField` (lista corta) y `Combobox` (lista larga, con buscador) comparten `Listbox`, así que se ven y se comportan igual. Ambos siguen los patrones ARIA de combobox: flechas, Home/End, Enter/Espacio, Esc y, en el Select, escribir salta a la opción. La lista se abre hacia arriba si no entra abajo. `onChange` recibe el valor, no el evento, y con `name` el valor viaja en un input oculto, así que sirven en formularios no controlados. El Combobox filtra sin distinguir mayúsculas ni acentos, y también por dígitos (útil para identificadores con guiones).
+- **Controles de elección**: `Checkbox`, `RadioGroup` y `Switch` usan el `<input>` nativo (invisible o con `appearance-none`) y dibujan encima su apariencia, así conservan teclado, foco, formularios y lectores de pantalla. El foco solo se ve con teclado (`focus-visible`). `RadioGroup` va en un `<fieldset>` con `<legend>` siempre visible y su `onChange` recibe el valor. Elegí `Switch` para un ajuste que se aplica al instante y `Checkbox` para lo que se confirma al enviar el formulario.
